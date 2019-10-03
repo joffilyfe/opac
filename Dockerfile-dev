@@ -1,3 +1,12 @@
+FROM node:10.15.3 AS buildstatic
+
+COPY . /app
+WORKDIR /app
+
+RUN npm install -y
+RUN cd /app \
+	&& npm run build
+
 FROM python:3.5-alpine
 ENV PYTHONUNBUFFERED 1
 
@@ -23,7 +32,8 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
 RUN apk --update add --no-cache \
     git gcc build-base zlib-dev jpeg-dev curl libxml2-dev libxslt-dev py3-lxml
 
-
+COPY . /app
+COPY --from=buildstatic /app/opac/webapp/static/ /app/opac/webapp/static/
 COPY ./requirements.txt /app/requirements.txt
 COPY ./requirements.dev.txt /app/requirements.dev.txt
 COPY ./start_worker.sh /start_worker.sh

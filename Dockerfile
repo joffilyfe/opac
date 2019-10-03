@@ -1,3 +1,12 @@
+FROM node:10.15.3 AS buildstatic
+
+COPY . /app
+WORKDIR /app
+
+RUN npm install -y
+RUN cd /app \
+	&& npm run build
+
 FROM python:3.5-alpine
 ENV PYTHONUNBUFFERED 1
 
@@ -25,6 +34,7 @@ RUN apk --update add --no-cache \
 
 COPY . /app
 WORKDIR /app
+COPY --from=buildstatic /app/opac/webapp/static/ /app/opac/webapp/static/
 
 RUN pip --no-cache-dir install -r requirements.txt && \
     pip --no-cache-dir install -r /app/requirements.dev.txt

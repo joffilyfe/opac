@@ -5,6 +5,5 @@
 tmp/*
 dumps
 node_modules/
-package.json
 package-lock.json
 opac/webapp/static/less/
