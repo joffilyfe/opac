@@ -1,5 +1,6 @@
 var Article = {
 	TopBinder: [],
+	libraries: {},
 	Init: function() {
 
 		Article.SetScreen();
@@ -402,7 +403,9 @@ var Article = {
 	    		$(this).find('.fm-button-main').removeClass('fm-button-main-mobile-open');
 
 	    	}
-	    });
+		});
+
+		Article.bindFloatingMenuEvents();
 	},
 
 	isScrolledIntoView: function(elem){
@@ -631,6 +634,29 @@ var Article = {
 			Article.IsHD = false;
 		}
 	},
+	appendScript: function(src, callback, parentNode) {
+		var scriptNode = document.createElement("script");
+		scriptNode.src = src;
+		scriptNode.onload = callback;
+		parentNode.appendChild(scriptNode)
+	},
+	loadDimensionLibrary: function() {
+		var body = document.getElementsByTagName("body")[0];
+
+		if (!Article.libraries.dimensions ||
+			(!!Article.libraries.dimensions && Article.libraries.dimensions.loaded == false)) {
+			Article.appendScript("//badge.dimensions.ai/badge.js", undefined, body)
+			Article.libraries["dimensions"] = {"loaded": true}
+			console.log("Loading dimensions library.")
+		} else {
+			console.log("Dimension library already loaded.")
+		}
+	},
+	bindFloatingMenuEvents: function() {
+		$(".fm-button-main, .sci-ico-metrics").on("click hover mouseenter", function(event) {
+			Article.loadDimensionLibrary()
+		})
+	}
 };
 
 $(function() {
